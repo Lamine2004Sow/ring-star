@@ -1,7 +1,11 @@
 import sys
 import time
 
-from heuristique import *
+from heuristique import (
+    chargerInstanceTsplib,
+    construireMatriceDistances,
+    construireSolutionGloutonne,
+)
 from metaheuristique import descenteStochastique
 from plne import resoudrePlneCompacte
 from visualisation import afficherSolution, nuageDePoints
@@ -11,18 +15,21 @@ def main():
     cheminTsp = "data/" + sys.argv[1]
     p = int(sys.argv[2])
 
-    # Paramètres "simples" fixés (pas d'arguments en plus)
     alpha = 1.0
     graineAleatoire = 0
 
     points, _, _ = chargerInstanceTsplib(cheminTsp)
     matriceDist = construireMatriceDistances(points)
 
-    nuageDePoints(points, f"Instance {sys.argv[1]}", f"img/{sys.argv[1]}_instance.png")
-    station1 = 0  # point n°1 => index 0
+    nuageDePoints(
+        points,
+        f"Instance {sys.argv[1]}",
+        f"img/{sys.argv[1]}_instance.png",
+    )
+
+    station1 = 0
     n = matriceDist.shape[0]
 
-    # k dépend de la taille (simple)
     k = max(500, 10 * n)
 
     t0 = time.time()
@@ -30,7 +37,14 @@ def main():
     t1 = time.time()
 
     t2 = time.time()
-    solutionDescente = descenteStochastique(solutionGloutonne, matriceDist, alpha, station1, k, graineAleatoire)
+    solutionDescente = descenteStochastique(
+        solutionGloutonne,
+        matriceDist,
+        alpha,
+        station1,
+        k,
+        graineAleatoire,
+    )
     t3 = time.time()
 
     print("=== Heuristique ===")
@@ -41,7 +55,12 @@ def main():
     )
     print(f"Solution gloutonne: {solutionGloutonne['stations']}")
 
-    afficherSolution(points, solutionGloutonne, "Solution gloutonne", f"img/{sys.argv[1]}_gloutonne_p{p}.png")
+    afficherSolution(
+        points,
+        solutionGloutonne,
+        "Solution gloutonne",
+        f"img/{sys.argv[1]}_gloutonne_p{p}.png",
+    )
 
     print("=== Métaheuristique ===")
     print(
@@ -51,9 +70,13 @@ def main():
     )
     print(f"Solution descente: {solutionDescente['stations']}")
 
-    afficherSolution(points, solutionDescente, "Solution descente stochastique", f"img/{sys.argv[1]}_descente_p{p}.png")
+    afficherSolution(
+        points,
+        solutionDescente,
+        "Solution descente stochastique",
+        f"img/{sys.argv[1]}_descente_p{p}.png",
+    )
 
-    # PLNE: on tente seulement si n pas trop grand (sinon très lent)
     solutionPlne = None
     statutPlne = None
     t4 = t5 = None
@@ -71,7 +94,12 @@ def main():
         )
         print(f"Solution PuLP: {solutionPlne['stations']}")
 
-        afficherSolution(points, solutionPlne, f"Solution PuLP ({statutPlne})", f"img/{sys.argv[1]}_pulp_p{p}.png")
+        afficherSolution(
+            points,
+            solutionPlne,
+            f"Solution PuLP ({statutPlne})",
+            f"img/{sys.argv[1]}_pulp_p{p}.png",
+        )
 
     else:
         print("=== PuLP (formulation compacte) ===")
@@ -80,4 +108,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

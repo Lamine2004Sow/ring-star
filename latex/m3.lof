@@ -1,0 +1,15 @@
+\babel@toc {french}{}\relax 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Schéma de principe du Ring-Star : un anneau relie les $p$ stations sélectionnées, et chaque pôle non station est rattaché à sa station la plus proche (liaisons en étoile).\relax }}{2}{figure.caption.7}%
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Nuages de points issus de TSPLIB (données d’entrée).\relax }}{2}{figure.caption.8}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Comparaison sur \texttt {eil51} avec $p=20$ : anneau (cycle) et rattachements en étoile.\relax }}{9}{figure.caption.9}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Comparaisons sur \texttt {eil51} pour $p=8$ (haut) et $p=41$ (bas).\relax }}{10}{figure.caption.10}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Comparaison des coûts totaux par instance et par méthode.\relax }}{11}{figure.caption.13}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Comparaison des temps de calcul (échelle logarithmique lorsque nécessaire).\relax }}{12}{figure.caption.14}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Temps de calcul PLNE sur \texttt {ulysses16} en fonction de $p$.\relax }}{12}{figure.caption.15}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Exemple d’exécution PLNE sur \texttt {eil51} avec $p=21$ : difficulté à obtenir une solution optimale certifiée dans un temps court.\relax }}{13}{figure.caption.16}%
+\addvspace {10\p@ }

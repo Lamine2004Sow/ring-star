@@ -2,10 +2,10 @@
 === Heuristique ===
 Glouton: cout=594.236 (metro=163.678, marche=430.559) temps=0.000s
 Solution gloutonne: [0, 18, 17, 22, 14, 9, 49, 19]
-=== Metaheuristique ===
-Descente: cout=589.003 (metro=160.115, marche=428.887) temps=0.039s
-Solution descente: [0, 14, 17, 18, 19, 22, 48, 49]
+=== Métaheuristique ===
+Descente: cout=589.003 (metro=160.115, marche=428.887) temps=0.037s
+Solution descente: [0, 18, 17, 22, 14, 48, 49, 19]
 === PuLP (formulation compacte) ===
-Status: Optimal
-PuLP: cout=586.893 (metro=166.606, marche=420.286) temps=31.463s
+Statut: Optimal
+PuLP: cout=586.893 (metro=166.606, marche=420.286) temps=34.243s
 Solution PuLP: [0, 2, 14, 15, 18, 22, 46, 48]

@@ -20,7 +20,10 @@ def descenteStochastique(
 
     stations = list(solution["stations"])
     ensembleStations = set(stations)
-    villesNonStations = [indiceVille for indiceVille in range(n) if indiceVille not in ensembleStations]
+    villesNonStations = [
+        indiceVille for indiceVille in range(n)
+        if indiceVille not in ensembleStations
+    ]
 
     meilleureSolution = solution
 
@@ -32,8 +35,10 @@ def descenteStochastique(
         stationRetiree = generateurAleatoire.choice(stationsSansStation1)
         villeAjoutee = generateurAleatoire.choice(villesNonStations)
 
-        # échange simple : on remplace stationRetiree par villeAjoutee
-        stationsTemporaires = [villeAjoutee if station == stationRetiree else station for station in stations]
+        stationsTemporaires = [
+            villeAjoutee if station == stationRetiree else station
+            for station in stations
+        ]
 
         affectationTemporaire = affecterVillesAuxStations(stationsTemporaires, matriceDist)
         cycleTemporaire = cycleVoisinPlusProche(stationsTemporaires, matriceDist, station1)
@@ -48,7 +53,10 @@ def descenteStochastique(
         if coutTemporaire < meilleureSolution["coutTotal"]:
             stations = stationsTemporaires
             ensembleStations = set(stations)
-            villesNonStations = [indiceVille for indiceVille in range(n) if indiceVille not in ensembleStations]
+            villesNonStations = [
+                indiceVille for indiceVille in range(n)
+                if indiceVille not in ensembleStations
+            ]
             meilleureSolution = {
                 "stations": stations,
                 "affectation": affectationTemporaire,
@@ -59,4 +67,3 @@ def descenteStochastique(
             }
 
     return meilleureSolution
-

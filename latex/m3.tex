@@ -1,0 +1,479 @@
+\documentclass[a4paper,11pt]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+
+\usepackage{geometry}
+\geometry{hmargin=2.6cm,vmargin=2.6cm}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.08}
+\usepackage{parskip}
+\usepackage{enumitem}
+\setlist[itemize]{itemsep=0.2em, topsep=0.2em}
+\setlist[enumerate]{itemsep=0.2em, topsep=0.2em}
+
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue!55!black,
+    citecolor=black,
+    pdftitle={SAÉ Optimisation 2025-2026 — Problème Ring-Star},
+    pdfauthor={Papa Birane MBENGUE; Mouhamadou Lamine SOW}
+}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+}
+
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+
+\newcommand{\instance}[1]{\texttt{#1}}
+\DeclareMathOperator*{\argmin}{argmin}
+
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+    \begin{center}
+        \begin{minipage}{0.45\textwidth}
+            \includegraphics[width=\linewidth]{img/logo_galilee.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+            \raggedleft
+            \includegraphics[width=0.9\linewidth]{img/logo_usp.png}
+        \end{minipage}
+
+        \vspace{1.5cm}
+
+        {\large \textbf{UNIVERSITÉ SORBONNE PARIS NORD}}\\
+        99 AVENUE JEAN-BAPTISTE CLÉMENT\\
+        93430 VILLETANEUSE
+
+        \vfill
+
+        \rule{\linewidth}{0.8pt}\\[0.6cm]
+        {\Huge \textbf{SAÉ Optimisation 2025--2026\\Conception d’un métro circulaire : le problème Ring-Star}}\\[0.6cm]
+        \rule{\linewidth}{0.8pt}
+
+        \vfill
+
+        \begin{minipage}{0.45\textwidth}
+            \raggedright
+            {\Large \textbf{Auteurs :}}\\[0.3cm]
+            \large
+            Papa Birane MBENGUE\\
+            Mouhamadou Lamine SOW
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+            \raggedleft
+            {\Large \textbf{Équipe de suivi :}}\\[0.3cm]
+            \large M. Lucas Létocart\\
+            M. Pierre Fouilhoux \\
+            M. Nabil H. Mustafa
+        \end{minipage}
+
+        \vfill
+        {\large \today}
+
+\end{center}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+Ce rapport étudie le \textbf{problème Ring-Star}, une modélisation classique pour concevoir une ligne de métro circulaire (un \emph{anneau}) complétée par des rattachements en \emph{étoile} vers les stations. Sur un ensemble de $n$ pôles d’activité, il s’agit de choisir exactement $p$ stations (dont une station imposée), de construire un cycle passant par ces stations et d’affecter chaque pôle à une station afin de minimiser un coût total combinant \emph{infrastructure} (longueur de l’anneau) et \emph{accessibilité} (distances de rattachement). Nous montrons la NP-difficulté du problème via des cas particuliers, proposons une formulation PLNE compacte résolue par CBC/PuLP, puis développons une heuristique constructive et une métaheuristique de descente stochastique. Des expériences sur des instances euclidiennes de TSPLIB (\instance{ulysses16}, \instance{eil51}) mettent en évidence un bon compromis qualité/temps pour la métaheuristique, et les limites de la résolution exacte lorsque $p$ est proche de $n/2$.
+
+\noindent\textbf{Mots-clés :} optimisation combinatoire, Ring-Star, PLNE, heuristique, métaheuristique, TSPLIB.
+
+\chapter*{Notations}
+\addcontentsline{toc}{chapter}{Notations}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}l p{0.72\textwidth}@{}}
+        \toprule
+        Symbole & Signification \\
+        \midrule
+        $V$ & ensemble des pôles d’activité (sommets), $|V| = n$ \\
+        $p$ & nombre de stations à sélectionner (le sommet 1 est imposé) \\
+        $D_{ij}$ & distance (euclidienne) entre les pôles $i$ et $j$ \\
+        $\alpha$ & pondération du coût métro dans la fonction objectif (\,$\alpha=1$ dans nos tests\,) \\
+        $y_{ij}$ & variable binaire d’affectation : $y_{ij}=1$ si $i$ est rattaché à la station $j$ \\
+        $x_{ij}$ & variable binaire : $x_{ij}=1$ si l’arête non orientée $\{i,j\}$ appartient à l’anneau \\
+        $z_{ij}$ & variables de flot (arcs orientés) pour imposer la connexité et éliminer les sous-tours \\
+        \bottomrule
+    \end{tabular}
+    \caption{Notations principales utilisées dans le rapport.}
+    \label{tab:notations}
+\end{table}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\cleardoublepage
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Contexte et objectif}
+
+L’optimisation des réseaux de transport public constitue un enjeu central de l’aménagement urbain. Dans de nombreuses configurations, une \emph{ligne circulaire} est attractive car elle distribue des flux autour d’un centre et peut connecter efficacement plusieurs zones d’activité. En contrepartie, la construction d’un anneau complet est coûteuse et il est souvent nécessaire de choisir un nombre limité de stations, quitte à compléter la desserte par des liaisons de rabattement (marche, bus, navette).
+
+\section{Définition du problème Ring-Star}
+
+Le problème Ring-Star formalise ce compromis. À partir d’un ensemble de $n$ pôles d’activité $V=\{1,\dots,n\}$ et d’une matrice de distances $D$, on cherche :
+\begin{itemize}
+    \item un ensemble $S \subseteq V$ de $p$ stations, avec la station $1 \in S$ imposée ;
+    \item un cycle (anneau) passant exactement une fois par chaque station de $S$ ;
+    \item une affectation de chaque pôle $i \in V$ vers une station $a(i) \in S$.
+\end{itemize}
+L’objectif est de minimiser un coût total de la forme :
+\[
+\min \quad \alpha \sum_{\{i,j\}\in \text{anneau}} D_{ij} \;+\; \sum_{i\in V} D_{i,a(i)}.
+\]
+Le premier terme mesure la longueur de l’anneau (coût d’infrastructure), tandis que le second mesure l’accessibilité via les rattachements en étoile (coût «~marche~»). La figure~\ref{fig:schema_ring_star} illustre le principe.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/schema_ring_star.png}
+    \caption{Schéma de principe du Ring-Star : un anneau relie les $p$ stations sélectionnées, et chaque pôle non station est rattaché à sa station la plus proche (liaisons en étoile).}
+    \label{fig:schema_ring_star}
+\end{figure}
+
+\section{Instances étudiées}
+
+Nos expériences s’appuient sur des instances euclidiennes de TSPLIB : \instance{ulysses16} ($n=16$) et \instance{eil51} ($n=51$). La figure~\ref{fig:instances} montre les nuages de points (données brutes). La résolution du Ring-Star consiste à choisir $p$ points comme stations, tracer un cycle sur ces stations et affecter les autres points.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/ulysses16.tsp_instance.png}
+        \caption{Instance \instance{ulysses16} ($n=16$).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_instance.png}
+        \caption{Instance \instance{eil51} ($n=51$).}
+    \end{subfigure}
+    \caption{Nuages de points issus de TSPLIB (données d’entrée).}
+    \label{fig:instances}
+\end{figure}
+
+\section{Organisation du rapport}
+
+Le chapitre~\ref{chap:complexite} établit la NP-difficulté. Le chapitre~\ref{chap:plne} présente une formulation PLNE compacte. Le chapitre~\ref{chap:heuristiques} décrit une heuristique constructive et une métaheuristique d’amélioration. Enfin, le chapitre~\ref{chap:resultats} analyse les résultats expérimentaux et l’influence de $p$ sur la difficulté de la résolution exacte.
+
+\chapter{NP-difficulté du problème Ring-Star}
+\label{chap:complexite}
+
+Avant de concevoir des algorithmes de résolution, il est essentiel de caractériser la difficulté du problème. Nous montrons la NP-difficulté du Ring-Star en exhibant deux problèmes NP-difficiles comme cas particuliers.
+
+\section{Cas particulier p=n : réduction au TSP}
+
+Si $p=n$, chaque pôle est une station. Il n’existe alors aucun rattachement en étoile (coût marche nul) et le problème se réduit à trouver un cycle passant une fois par chaque sommet et minimisant la somme des longueurs : c’est exactement le \emph{problème du voyageur de commerce} (TSP), NP-difficile. Ainsi, Ring-Star généralise le TSP, donc il est NP-difficile.
+
+\section{Cas particulier alpha=0 : réduction au p-médian}
+
+Si $\alpha = 0$, le coût de l’anneau devient nul : il ne reste qu’à choisir $p$ stations et à affecter chaque pôle à une station pour minimiser la somme des distances d’affectation. Ce cas particulier correspond au \emph{problème du $p$-médian}, également NP-difficile. On en déduit à nouveau la NP-difficulté du Ring-Star.
+
+\section{Conséquences}
+
+En pratique, on ne peut pas espérer un algorithme exact polynomial pour toutes les instances. Cela justifie l’usage combiné (i) d’une PLNE pour les petites tailles et (ii) d’heuristiques et métaheuristiques pour les configurations réalistes.
+
+\chapter{Modélisation mathématique (PLNE)}
+\label{chap:plne}
+
+Pour obtenir des solutions optimales sur des instances de taille raisonnable, nous proposons une formulation en \textbf{programmation linéaire en nombres entiers (PLNE)} résolue avec PuLP et le solveur CBC.
+
+\section{Variables de décision}
+
+On introduit :
+\begin{itemize}
+    \item $y_{ij}\in\{0,1\}$ : $y_{ij}=1$ si le pôle $i$ est affecté à la station $j$ ;
+    \item $x_{ij}\in\{0,1\}$ (pour $i<j$) : $x_{ij}=1$ si l’arête $\{i,j\}$ appartient à l’anneau ;
+    \item $z_{ij}\ge 0$ (pour $i\neq j$) : flot orienté utilisé pour garantir la connexité et éliminer les sous-tours.
+\end{itemize}
+
+\section{Formulation compacte}
+
+La fonction objectif est :
+\begin{equation}
+\min \quad \alpha \sum_{1\le i<j\le n} D_{ij}\,x_{ij} \;+\; \sum_{i=1}^{n}\sum_{j=1}^{n} D_{ij}\,y_{ij}.
+\label{eq:obj}
+\end{equation}
+
+Sous les contraintes suivantes :
+\begin{align}
+&\sum_{j=1}^{n} y_{jj} = p &&\text{(exactement $p$ stations)} \label{eq:stations}\\
+&\sum_{j=1}^{n} y_{ij} = 1 &&\forall i \in \{1,\dots,n\} \quad \text{(affectation unique)} \label{eq:assign}\\
+&y_{ij} \le y_{jj} &&\forall i,j \in \{1,\dots,n\} \quad \text{(affectation $\Rightarrow$ station)} \label{eq:linky}\\
+&y_{11}=1 &&\text{(station 1 imposée)} \label{eq:fixe}\\
+&x_{ij} \le y_{ii},\; x_{ij} \le y_{jj} &&\forall 1\le i<j\le n \quad \text{(arête $\Rightarrow$ deux stations)} \label{eq:linkx}\\
+&\sum_{j<i} x_{ji} + \sum_{j>i} x_{ij} = 2\,y_{ii} &&\forall i \in \{1,\dots,n\} \quad \text{(degré 2 pour les stations)} \label{eq:degree}\\
+&\sum_{j\ne i} z_{ij} - \sum_{j\ne i} z_{ji} = y_{ii} &&\forall i \in \{2,\dots,n\} \quad \text{(flot vers chaque station)} \label{eq:flow}\\
+&\sum_{j\ne 1} z_{1j} - \sum_{j\ne 1} z_{j1} = p-1 &&\text{(source)} \label{eq:source}\\
+&z_{ij} + z_{ji} \le (p-1)\,x_{ij} &&\forall 1\le i<j\le n \quad \text{(capacité liée à l’anneau)} \label{eq:cap}\\
+&z_{ij}\ge 0 &&\forall i\ne j. \label{eq:nonneg}
+\end{align}
+
+Les contraintes de flot garantissent qu’un unique cycle connecte toutes les stations (pas de sous-tours), tout en conservant un modèle de taille polynomiale.
+
+\chapter{Algorithmes approchés}
+\label{chap:heuristiques}
+
+Compte tenu de la NP-difficulté, les méthodes exactes deviennent rapidement coûteuses. Nous proposons une heuristique constructive pour produire une solution faisable, puis une métaheuristique d’amélioration.
+
+\section{Heuristique constructive}
+
+L’heuristique gloutonne suit les étapes suivantes :
+\begin{enumerate}
+    \item \textbf{Initialisation par grille :} on partitionne le plan et on retient des représentants spatiaux pour obtenir un premier ensemble de stations bien réparties.
+    \item \textbf{Complément maximin :} tant que $|S|<p$, on ajoute le pôle maximisant sa distance à l’ensemble $S$ (évite les regroupements).
+    \item \textbf{Affectation :} chaque pôle est rattaché à la station la plus proche (variables $y$).
+    \item \textbf{Construction du cycle :} on construit un cycle sur $S$ via un plus-proche-voisin (heuristique TSP).
+\end{enumerate}
+
+\begin{algorithm}[htbp]
+\caption{Heuristique constructive (gloutonne)}
+\label{alg:glouton}
+\begin{algorithmic}[1]
+\STATE \textbf{Entrée :} points $V$, entier $p$, distances $D$, station imposée $1$
+\STATE Construire une grille et extraire un premier ensemble $S$
+\WHILE{$|S| < p$}
+    \STATE Ajouter au $S$ le pôle maximisant sa distance minimale à $S$ (maximin)
+\ENDWHILE
+\STATE Affecter chaque pôle $i$ à la station $j \in S$ la plus proche (variables $y_{ij}$)
+\STATE Construire un cycle sur $S$ par plus-proche-voisin (variables $x_{ij}$)
+\STATE \textbf{Retourner} $(S, x, y)$ et le coût total
+\end{algorithmic}
+\end{algorithm}
+
+\section{Descente stochastique par échanges (SWAP)}
+
+À partir d’une solution, la descente stochastique explore un voisinage par échanges : on remplace une station (hors station imposée) par un pôle non station, puis on recalcule affectations et cycle. La nouvelle solution est acceptée si elle améliore le coût.
+
+\begin{algorithm}[htbp]
+\caption{Métaheuristique de descente stochastique (SWAP)}
+\label{alg:descente}
+\begin{algorithmic}[1]
+\STATE \textbf{Entrée :} solution initiale $(S,x,y)$, distances $D$, $\alpha$, station imposée $1$, itérations $k$
+\STATE $S^\star \leftarrow S$ (meilleure solution courante)
+\FOR{$t=1$ \TO $k$}
+    \STATE Tirer au hasard une station $s \in S \setminus \{1\}$ et un pôle $v \in V \setminus S$
+    \STATE Former $S' \leftarrow (S \setminus \{s\}) \cup \{v\}$
+    \STATE Recalculer l’affectation et le cycle sur $S'$, obtenir le coût $C(S')$
+    \IF{$C(S') < C(S)$}
+        \STATE Accepter : $S \leftarrow S'$
+        \IF{$C(S) < C(S^\star)$}
+            \STATE $S^\star \leftarrow S$
+        \ENDIF
+    \ENDIF
+\ENDFOR
+\STATE \textbf{Retourner} $S^\star$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Complexité (ordre de grandeur)}
+
+La construction gloutonne effectue principalement des affectations (coût $\mathcal{O}(np)$) et un cycle sur $p$ stations (coût $\mathcal{O}(p^2)$). La descente stochastique répète ces opérations $k$ fois ; dans notre implémentation, $k=\max(500,10n)$, ce qui reste compatible avec des temps quasi instantanés pour les tailles considérées.
+
+\chapter{Résultats expérimentaux}
+\label{chap:resultats}
+
+\section{Protocole expérimental}
+
+Les paramètres sont fixés de manière reproductible :
+\begin{itemize}
+    \item pondération $\alpha = 1$ ;
+    \item station imposée : sommet $1$ (indice 0 dans le code) ;
+    \item graine aléatoire fixée à 0 ;
+    \item nombre d’itérations : $k=\max(500,10n)$.
+\end{itemize}
+Nous comparons trois approches : heuristique gloutonne, descente stochastique, et PLNE (lorsque le solveur termine).
+
+\section{Analyse qualitative}
+
+Sur \instance{eil51} avec $p=20$, la descente stochastique réduit sensiblement le coût et produit un anneau généralement plus régulier (moins de détours) tout en conservant une bonne couverture spatiale (figure~\ref{fig:eil51_p20}).
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_gloutonne_p20.png}
+        \caption{Glouton.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_descente_p20.png}
+        \caption{Après descente.}
+    \end{subfigure}
+    \caption{Comparaison sur \instance{eil51} avec $p=20$ : anneau (cycle) et rattachements en étoile.}
+    \label{fig:eil51_p20}
+\end{figure}
+
+La figure~\ref{fig:eil51_extremes} illustre également deux configurations extrêmes : $p$ faible ($p=8$) et $p$ élevé ($p=41$). Quand $p$ est grand, le coût métro domine et la qualité du cycle construit par plus-proche-voisin devient critique : la métaheuristique améliore nettement l’anneau, et la PLNE fournit la référence optimale lorsque le solveur termine.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[t]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_gloutonne_p8.png}
+        \caption{$p=8$ (glouton).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_descente_p8.png}
+        \caption{$p=8$ (descente).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_pulp_p8.png}
+        \caption{$p=8$ (PLNE).}
+    \end{subfigure}
+
+    \par\medskip
+
+    \begin{subfigure}[t]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_gloutonne_p41.png}
+        \caption{$p=41$ (glouton).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_descente_p41.png}
+        \caption{$p=41$ (descente).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.32\textwidth}
+        \includegraphics[width=\textwidth]{img/eil51.tsp_pulp_p41.png}
+        \caption{$p=41$ (PLNE).}
+    \end{subfigure}
+    \caption{Comparaisons sur \instance{eil51} pour $p=8$ (haut) et $p=41$ (bas).}
+    \label{fig:eil51_extremes}
+\end{figure}
+
+\section{Résultats synthétiques}
+
+Les tableaux~\ref{tab:res_ulysses} et~\ref{tab:res_eil51} résument coûts (total, métro, marche) et temps. Le \emph{gap} est l’écart relatif au coût optimal PLNE, lorsqu’il est disponible.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}r l r r r r r@{}}
+        \toprule
+        $p$ & Méthode & Coût total & Métro & Marche & Temps (s) & Gap (\%) \\
+        \midrule
+        5  & Glouton     & 91.964  & 57.727  & 34.237  & 0.000 & 40.67 \\
+        5  & Descente    & 65.378  & 18.248  & 47.130  & 0.010 & 0.00 \\
+        5  & PLNE (opt.) & 65.378  & 18.248  & 47.130  & 1.589 & 0.00 \\
+        \addlinespace
+        8  & Glouton     & 94.053  & 72.347  & 21.706  & 0.000 & 47.60 \\
+        8  & Descente    & 65.015  & 23.560  & 41.455  & 0.012 & 2.03 \\
+        8  & PLNE (opt.) & 63.721  & 31.363  & 32.358  & 9.299 & 0.00 \\
+        \addlinespace
+        12 & Glouton     & 104.982 & 101.653 & 3.329   & 0.000 & 68.55 \\
+        12 & Descente    & 65.132  & 38.717  & 26.415  & 0.013 & 4.57 \\
+        12 & PLNE (opt.) & 62.286  & 40.097  & 22.189  & 0.449 & 0.00 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Résultats sur \instance{ulysses16} ($n=16$, $\alpha=1$).}
+    \label{tab:res_ulysses}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}r l r r r r r@{}}
+        \toprule
+        $p$ & Méthode & Coût total & Métro & Marche & Temps (s) & Gap (\%) \\
+        \midrule
+        8  & Glouton     & 594.236 & 163.678 & 430.559 & 0.000 & 1.25 \\
+        8  & Descente    & 589.003 & 160.115 & 428.887 & 0.037 & 0.36 \\
+        8  & PLNE (opt.) & 586.893 & 166.606 & 420.286 & 34.243 & 0.00 \\
+        \addlinespace
+        20 & Glouton     & 549.603 & 313.182 & 236.422 & 0.001 & -- \\
+        20 & Descente    & 482.040 & 233.842 & 248.198 & 0.059 & -- \\
+        \addlinespace
+        41 & Glouton     & 596.795 & 535.184 & 61.611  & 0.001 & 47.78 \\
+        41 & Descente    & 428.565 & 342.068 & 86.498  & 0.097 & 6.13 \\
+        41 & PLNE (opt.) & 403.830 & 319.788 & 84.043  & 4.141 & 0.00 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Résultats sur \instance{eil51} ($n=51$, $\alpha=1$). Le PLNE n’a pas été résolu pour $p=20$ dans le temps imparti.}
+    \label{tab:res_eil51}
+\end{table}
+
+\section{Courbes coût/temps}
+
+Les figures suivantes donnent une vue d’ensemble : coûts (figure~\ref{fig:chart_cout}) et temps de calcul (figure~\ref{fig:chart_temps}). La métaheuristique améliore systématiquement l’heuristique gloutonne, tout en restant quasi instantanée sur ces tailles, tandis que le PLNE peut devenir coûteux selon $p$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\textwidth]{img/comparaison_cout.png}
+    \caption{Comparaison des coûts totaux par instance et par méthode.}
+    \label{fig:chart_cout}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\textwidth]{img/comparaison_temps.png}
+    \caption{Comparaison des temps de calcul (échelle logarithmique lorsque nécessaire).}
+    \label{fig:chart_temps}
+\end{figure}
+
+\section{Influence du paramètre p sur la difficulté du PLNE}
+
+Le nombre de sous-ensembles de $p$ stations parmi $n$ est $\binom{n}{p}$, quantité maximale lorsque $p \approx n/2$. Cette explosion combinatoire se reflète en pratique dans le temps de résolution du PLNE. Sur \instance{ulysses16}, la figure~\ref{fig:ulysses_time} illustre une évolution non monotone du temps en fonction de $p$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.80\textwidth]{img/ulysses16_time_vs_p.png}
+    \caption{Temps de calcul PLNE sur \instance{ulysses16} en fonction de $p$.}
+    \label{fig:ulysses_time}
+\end{figure}
+
+Pour \instance{eil51}, des valeurs de $p$ proches de $n/2$ rendent la résolution exacte délicate en temps raisonnable. La figure~\ref{fig:timeout} montre un exemple de tentative de résolution qui ne converge pas rapidement vers une preuve d’optimalité.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.90\textwidth]{img/cbc_timeout_eil51_p21.png}
+    \caption{Exemple d’exécution PLNE sur \instance{eil51} avec $p=21$ : difficulté à obtenir une solution optimale certifiée dans un temps court.}
+    \label{fig:timeout}
+\end{figure}
+
+\chapter{Conclusion générale}
+
+Ce projet a permis d’étudier le problème Ring-Star à la fois sur le plan théorique et algorithmique. La NP-difficulté justifie l’usage d’une formulation exacte PLNE uniquement sur des instances ou paramètres favorables, tandis que l’heuristique et la métaheuristique offrent des solutions de bonne qualité en un temps très faible.
+
+Les résultats montrent que la descente stochastique améliore nettement l’heuristique constructive, et se rapproche souvent de l’optimum lorsque celui-ci est disponible. Pour aller plus loin, des pistes naturelles consistent à : (i) renforcer la construction du cycle (par exemple via 2-opt/3-opt), (ii) utiliser des métaheuristiques plus exploratoires (recuit simulé, recherche tabou), et (iii) étudier des critères multi-objectifs séparant explicitement coût métro et accessibilité.
+
+\end{document}
