@@ -387,6 +387,142 @@ Retourner best
 </tr>
 </tbody>
 </table>
+<h3 id="analyses-comparatives">Analyses comparatives </h3>
+<p>Les six exécutions montrent un comportement stable :</p>
+<ul>
+<li>La descente améliore systématiquement la gloutonne : <strong>+18.96%</strong> de gain moyen sur le coût total (de 7.71% à 25.80% selon le cas).</li>
+<li>La descente reste proche de l'optimum PuLP : <strong>3.84%</strong> d'écart moyen (entre 1.02% et 6.63%).</li>
+<li>Le compromis qualité/temps est net : la descente est en moyenne ~588x plus rapide que PuLP (médiane ~224x).</li>
+</ul>
+<p>Lecture structurelle des coûts (métro vs marche) :</p>
+<ul>
+<li>Quand <code>p</code> augmente, le coût de marche baisse fortement, tandis que le coût métro augmente.</li>
+<li>Sur les plages testées, l'effet « baisse de marche » domine : le coût total diminue avec <code>p</code> pour <code>att48</code> et <code>kroA100</code>.</li>
+</ul>
+<h3 id="diagrammes">Diagrammes </h3>
+<h4 id="diagramme-1--évolution-du-coût-total-att48">Diagramme 1 : évolution du coût total (att48) </h4>
+<svg viewBox="0 0 420 340" role="img" aria-label="Evolution du cout total pour att48 selon p" style="max-width:760px; width:100%; height:auto;">
+  <rect x="0" y="0" width="420" height="340" fill="#ffffff"></rect>
+  <line x1="60" y1="300" x2="360" y2="300" stroke="#222" stroke-width="1.5"></line>
+  <line x1="60" y1="60" x2="60" y2="300" stroke="#222" stroke-width="1.5"></line>
+  <line x1="60" y1="300" x2="360" y2="300" stroke="#d1d5db" stroke-width="1"></line>
+  <line x1="60" y1="190" x2="360" y2="190" stroke="#e5e7eb" stroke-width="1"></line>
+  <line x1="60" y1="80" x2="360" y2="80" stroke="#e5e7eb" stroke-width="1"></line>
+  <text x="24" y="304" font-size="11" fill="#111">30k</text>
+  <text x="24" y="194" font-size="11" fill="#111">40k</text>
+  <text x="24" y="84" font-size="11" fill="#111">50k</text>
+  <text x="55" y="318" font-size="11" fill="#111">p=10</text>
+  <text x="192" y="318" font-size="11" fill="#111">p=24</text>
+  <text x="332" y="318" font-size="11" fill="#111">p=38</text>
+  <polyline points="60,93 200,172 340,148" fill="none" stroke="#d97706" stroke-width="3"></polyline>
+  <polyline points="60,134 200,262 340,272" fill="none" stroke="#0284c7" stroke-width="3"></polyline>
+  <polyline points="60,165 200,269 340,284" fill="none" stroke="#16a34a" stroke-width="3"></polyline>
+  <circle cx="60" cy="93" r="3.5" fill="#d97706"></circle>
+  <circle cx="200" cy="172" r="3.5" fill="#d97706"></circle>
+  <circle cx="340" cy="148" r="3.5" fill="#d97706"></circle>
+  <circle cx="60" cy="134" r="3.5" fill="#0284c7"></circle>
+  <circle cx="200" cy="262" r="3.5" fill="#0284c7"></circle>
+  <circle cx="340" cy="272" r="3.5" fill="#0284c7"></circle>
+  <circle cx="60" cy="165" r="3.5" fill="#16a34a"></circle>
+  <circle cx="200" cy="269" r="3.5" fill="#16a34a"></circle>
+  <circle cx="340" cy="284" r="3.5" fill="#16a34a"></circle>
+  <rect x="245" y="14" width="12" height="12" fill="#d97706"></rect>
+  <text x="262" y="24" font-size="11" fill="#111">Gloutonne</text>
+  <rect x="245" y="30" width="12" height="12" fill="#0284c7"></rect>
+  <text x="262" y="40" font-size="11" fill="#111">Descente</text>
+  <rect x="245" y="46" width="12" height="12" fill="#16a34a"></rect>
+  <text x="262" y="56" font-size="11" fill="#111">PuLP (optimal)</text>
+</svg>
+<h4 id="diagramme-2--évolution-du-coût-total-kroa100">Diagramme 2 : évolution du coût total (kroA100) </h4>
+<svg viewBox="0 0 420 340" role="img" aria-label="Evolution du cout total pour kroA100 selon p" style="max-width:760px; width:100%; height:auto;">
+  <rect x="0" y="0" width="420" height="340" fill="#ffffff"></rect>
+  <line x1="60" y1="300" x2="360" y2="300" stroke="#222" stroke-width="1.5"></line>
+  <line x1="60" y1="60" x2="60" y2="300" stroke="#222" stroke-width="1.5"></line>
+  <line x1="60" y1="300" x2="360" y2="300" stroke="#d1d5db" stroke-width="1"></line>
+  <line x1="60" y1="190" x2="360" y2="190" stroke="#e5e7eb" stroke-width="1"></line>
+  <line x1="60" y1="80" x2="360" y2="80" stroke="#e5e7eb" stroke-width="1"></line>
+  <text x="20" y="304" font-size="11" fill="#111">20k</text>
+  <text x="20" y="194" font-size="11" fill="#111">28k</text>
+  <text x="20" y="84" font-size="11" fill="#111">36k</text>
+  <text x="55" y="318" font-size="11" fill="#111">p=20</text>
+  <text x="192" y="318" font-size="11" fill="#111">p=50</text>
+  <text x="332" y="318" font-size="11" fill="#111">p=80</text>
+  <polyline points="60,97 200,197 340,183" fill="none" stroke="#d97706" stroke-width="3"></polyline>
+  <polyline points="60,165 200,278 340,281" fill="none" stroke="#0284c7" stroke-width="3"></polyline>
+  <polyline points="60,180 200,281 340,298" fill="none" stroke="#16a34a" stroke-width="3"></polyline>
+  <circle cx="60" cy="97" r="3.5" fill="#d97706"></circle>
+  <circle cx="200" cy="197" r="3.5" fill="#d97706"></circle>
+  <circle cx="340" cy="183" r="3.5" fill="#d97706"></circle>
+  <circle cx="60" cy="165" r="3.5" fill="#0284c7"></circle>
+  <circle cx="200" cy="278" r="3.5" fill="#0284c7"></circle>
+  <circle cx="340" cy="281" r="3.5" fill="#0284c7"></circle>
+  <circle cx="60" cy="180" r="3.5" fill="#16a34a"></circle>
+  <circle cx="200" cy="281" r="3.5" fill="#16a34a"></circle>
+  <circle cx="340" cy="298" r="3.5" fill="#16a34a"></circle>
+  <rect x="245" y="14" width="12" height="12" fill="#d97706"></rect>
+  <text x="262" y="24" font-size="11" fill="#111">Gloutonne</text>
+  <rect x="245" y="30" width="12" height="12" fill="#0284c7"></rect>
+  <text x="262" y="40" font-size="11" fill="#111">Descente</text>
+  <rect x="245" y="46" width="12" height="12" fill="#16a34a"></rect>
+  <text x="262" y="56" font-size="11" fill="#111">PuLP (optimal)</text>
+</svg>
+<h4 id="diagramme-3--accélération-de-la-descente-vs-pulp">Diagramme 3 : accélération de la descente vs PuLP </h4>
+<p>Barres normalisées en échelle logarithmique (plus la barre est longue, plus la descente est rapide par rapport à PuLP).</p>
+<table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Accélération (PuLP / descente)</th>
+<th>Diagramme</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>att48, p=10</td>
+<td>1411.8x</td>
+<td><div style="background:#e5e7eb; width:220px; height:12px;"><div style="background:#0284c7; width:95%; height:12px;"></div></div></td>
+</tr>
+<tr>
+<td>att48, p=24</td>
+<td>297.5x</td>
+<td><div style="background:#e5e7eb; width:220px; height:12px;"><div style="background:#0284c7; width:75%; height:12px;"></div></div></td>
+</tr>
+<tr>
+<td>att48, p=38</td>
+<td>25.2x</td>
+<td><div style="background:#e5e7eb; width:220px; height:12px;"><div style="background:#0284c7; width:43%; height:12px;"></div></div></td>
+</tr>
+<tr>
+<td>kroA100, p=20</td>
+<td>1614.0x</td>
+<td><div style="background:#e5e7eb; width:220px; height:12px;"><div style="background:#0284c7; width:97%; height:12px;"></div></div></td>
+</tr>
+<tr>
+<td>kroA100, p=50</td>
+<td>150.8x</td>
+<td><div style="background:#e5e7eb; width:220px; height:12px;"><div style="background:#0284c7; width:66%; height:12px;"></div></div></td>
+</tr>
+<tr>
+<td>kroA100, p=80</td>
+<td>28.9x</td>
+<td><div style="background:#e5e7eb; width:220px; height:12px;"><div style="background:#0284c7; width:44%; height:12px;"></div></div></td>
+</tr>
+</tbody>
+</table>
+<h3 id="conclusion-et-recommandations">Conclusion et recommandations </h3>
+<p>Sur ces instances, la stratégie la plus robuste est :</p>
+<ol>
+<li>Construire rapidement une solution gloutonne.</li>
+<li>L'améliorer par descente stochastique (fort gain de qualité pour un temps très faible).</li>
+<li>Utiliser PuLP comme référence de calibration sur quelques tailles cibles, pas comme moteur principal pour de nombreuses exécutions.</li>
+</ol>
+<p><strong>Conclusion générale :</strong> la métaheuristique fournit un excellent compromis opérationnel qualité/temps, et reste proche de l'optimal sur les cas testés.</p>
+<h4 id="limites-et-perspectives">Limites et perspectives </h4>
+<ul>
+<li>L'analyse repose sur 2 instances TSPLIB et 6 couples <code>(instance, p)</code> ; il faut élargir l'échantillon pour généraliser.</li>
+<li>Le paramètre <code>alpha</code> n'est pas exploré ici : une étude de sensibilité permettrait de mieux caractériser le compromis métro/marche.</li>
+<li>Une version multi-start (plusieurs graines) de la descente peut encore réduire l'écart à l'optimum avec un surcoût temporel modéré.</li>
+</ul>
 <p>L'ensemble des cycles de stations complets reste disponible dans les fichiers texte listés ci-dessus.</p>
 <hr>
 
