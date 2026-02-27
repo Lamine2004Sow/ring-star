@@ -26,6 +26,25 @@ L'objectif est de minimiser une fonction de coût combinant :
 
 > **Compromis fondamental :** plus on ouvre de stations, plus le cycle s'allonge (coût élevé) mais plus les distances à pied diminuent. Peu de stations réduisent le coût du cycle mais augmentent les trajets d'accès.
 
+### Structure générale d'une solution Ring-Star
+
+```mermaid
+graph TD
+    A[Pôle A] -->|étoile| S1((Station 1))
+    B[Pôle B] -->|étoile| S1
+    C[Pôle C] -->|étoile| S2((Station 2))
+    D[Pôle D] -->|étoile| S3((Station 3))
+    E[Pôle E] -->|étoile| S3
+
+    S1 -->|anneau| S2
+    S2 -->|anneau| S3
+    S3 -->|anneau| S1
+
+    style S1 fill:#005AA7,color:#fff,stroke:#005AA7
+    style S2 fill:#005AA7,color:#fff,stroke:#005AA7
+    style S3 fill:#005AA7,color:#fff,stroke:#005AA7
+```
+
 ---
 
 ## NP-difficulté du problème Ring-Star
@@ -40,9 +59,25 @@ Si $p = n$ (chaque pôle est une station), il n'y a plus de lien en étoile et l
 
 Si $\alpha = 0$ (le coût de l'anneau est nul), la fonction objectif ne dépend plus que des distances d'affectation. Le problème consiste alors à sélectionner $p$ stations et à affecter chaque pôle à sa station la plus proche pour minimiser la somme des distances. C'est exactement le **problème du p-médian**, lui aussi NP-difficile.
 
-### Conclusion
+### Positionnement du Ring-Star
 
-Le problème Ring-Star généralise à la fois le TSP ($p = n$) et le p-médian ($\alpha = 0$). Ces deux problèmes étant NP-difficiles, le problème Ring-Star est lui-même **NP-difficile**. On ne peut donc pas garantir une résolution exacte en temps polynomial pour des instances de grande taille, d'où l'intérêt des méthodes approchées.
+```mermaid
+graph TD
+    RS["Ring-Star (général)"]
+    TSP["TSP\n(p = n, α > 0)"]
+    PM["p-médian\n(α = 0)"]
+    NP["NP-difficile"]
+
+    RS -->|"cas particulier p = n"| TSP
+    RS -->|"cas particulier α = 0"| PM
+    TSP --> NP
+    PM --> NP
+
+    style RS fill:#005AA7,color:#fff
+    style NP fill:#c0392b,color:#fff
+```
+
+Le problème Ring-Star généralise à la fois le TSP ($p = n$) et le p-médian ($\alpha = 0$). On ne peut donc pas garantir une résolution exacte en temps polynomial pour des instances de grande taille, d'où l'intérêt des méthodes approchées.
 
 ---
 
@@ -91,18 +126,32 @@ L'heuristique construit une solution en quatre phases :
 3. **Affectation :** chaque pôle non-station est affecté à la station la plus proche (distance euclidienne).
 4. **Tracé du cycle :** on construit un cycle sur les $p$ stations par l'algorithme du **plus proche voisin (Nearest Neighbor TSP)**, en partant de la station fixée.
 
-```
-Algorithme : Heuristique Gloutonne
-Entrée : Ensemble de points V, entier p, matrice des distances
+#### Flowchart de l'heuristique gloutonne
 
-1. Construire la grille et extraire les centres → S_init
-2. Compléter S_init jusqu'à p stations par la règle Maximin
-3. Affecter chaque pôle à la station la plus proche (y_ij)
-4. Construire le cycle sur S_init par l'algorithme du plus proche voisin
-5. Retourner (stations, affectation, cycle, coût total)
+```mermaid
+flowchart TD
+    A([Entrée : points V, entier p, distances D]) --> B
+
+    B["Etape 1 — Grille\nDecouper le plan en cases q x q\nq = ceil de racine de p"]
+    B --> C["Pour chaque case non vide :\nchoisir la ville la plus proche du centre"]
+    C --> D{Nombre de stations = p ?}
+
+    D -- Non --> E["Etape 2 — Maximin\najouter le pole qui maximise\nla distance min. aux stations"]
+    E --> D
+
+    D -- Oui --> F["Etape 3 — Affectation\nchaque pole -> station la plus proche"]
+    F --> G["Etape 4 — Cycle\nNearest Neighbor TSP\ndepuis station fixee"]
+    G --> H([Sortie : stations, affectation, cycle, cout])
+
+    style A fill:#eaf4fb,stroke:#005AA7
+    style H fill:#eaf4fb,stroke:#005AA7
+    style D fill:#fff3cd,stroke:#f0ad4e
+    style E fill:#d4edda,stroke:#28a745
 ```
 
 **Complexité :** essentiellement $O(n^2)$ (matrice de distances). Fournit très rapidement une solution réalisable de qualité raisonnable.
+
+---
 
 ### Métaheuristique : descente stochastique par échanges (SWAP)
 
@@ -114,24 +163,53 @@ La gloutonne peut rester bloquée dans une solution "moyenne". La métaheuristiq
 - On recalcule affectations + cycle + coût total.
 - Si le coût **diminue** → on accepte la nouvelle solution ; sinon, on conserve l'ancienne.
 
-```
-Algorithme : Descente Stochastique (k itérations)
-Entrée : solution initiale, D, α, station1, k, graine
+#### Flowchart de la descente stochastique
 
-best ← solution
-Pour t = 1 à k :
-    choisir stationRetiree ∈ stations \ {station1}
-    choisir villeAjoutée ∉ stations
-    stations' ← stations avec l'échange
-    affect' ← affecterVillesAuxStations(stations', D)
-    cycle'  ← cycleVoisinPlusProche(stations', D, station1)
-    C'      ← coutTotal(stations', cycle', affect', D, α)
-    Si C' < best.C :
-        best ← solution'   ← on accepte uniquement si amélioration
-Retourner best
+```mermaid
+flowchart TD
+    A([Entree : solution initiale, k iterations]) --> B["best <- solution initiale"]
+    B --> C{t inferieur ou egal a k ?}
+
+    C -- Non --> Z([Sortie : best])
+
+    C -- Oui --> D["Choisir aleatoirement :\n- stationRetiree different de station1\n- villeAjoutee non dans stations"]
+    D --> E["Construire stations prime\nechange SWAP"]
+    E --> F["Recalculer :\naffect prime, cycle prime, C prime"]
+    F --> G{C prime inferieur a best.C ?}
+
+    G -- Oui --> H["best <- solution prime\nAmelioration acceptee"]
+    G -- Non  --> I["Solution rejetee\nOn conserve best"]
+
+    H --> J["t <- t + 1"]
+    I --> J
+    J --> C
+
+    style A fill:#eaf4fb,stroke:#005AA7
+    style Z fill:#eaf4fb,stroke:#005AA7
+    style C fill:#fff3cd,stroke:#f0ad4e
+    style G fill:#fff3cd,stroke:#f0ad4e
+    style H fill:#d4edda,stroke:#28a745
+    style I fill:#f8d7da,stroke:#dc3545
 ```
 
 Cette approche ne garantit pas l'optimalité globale mais améliore en pratique sensiblement la solution gloutonne. Les choix aléatoires permettent d'explorer divers voisinages et d'échapper à certains optima locaux.
 
 ---
 
+## Résumé des approches
+
+```mermaid
+graph LR
+    G["Heuristique Gloutonne\nO(n2)"] -->|solution initiale| S["Descente Stochastique\nO(k fois n2)"]
+    S -->|si petite instance| P["PLNE CBC/PuLP\nexact"]
+
+    style G fill:#d4edda,stroke:#28a745,color:#000
+    style S fill:#cce5ff,stroke:#005AA7,color:#000
+    style P fill:#e2d9f3,stroke:#6f42c1,color:#000
+```
+
+| Méthode | Optimalité | Complexité | Usage |
+|---|---|---|---|
+| **PLNE (CBC)** | Exacte | Exponentielle (worst case) | Petites instances |
+| **Heuristique gloutonne** | Approchée | $O(n^2)$ | Solution initiale rapide |
+| **Descente stochastique** | Approchée | $O(k \cdot n^2)$ | Amélioration itérative |
