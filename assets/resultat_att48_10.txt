@@ -1,0 +1,11 @@
+.venv/bin/python3 main.py att48.tsp 10
+=== Heuristique ===
+Glouton: cout=48833.893 (metro=20285.261, marche=28548.632) temps=0.001s
+Solution gloutonne: [0, 25, 23, 47, 31, 40, 13, 46, 45, 29]
+=== Métaheuristique ===
+Descente: cout=45070.809 (metro=18225.988, marche=26844.821) temps=0.051s
+Solution descente: [0, 17, 12, 9, 38, 40, 4, 19, 45, 26]
+=== PuLP (formulation compacte) ===
+Statut: Optimal
+PuLP: cout=42269.868 (metro=16220.000, marche=26049.868) temps=72.001s
+Solution PuLP: [0, 4, 5, 9, 12, 17, 21, 32, 33, 38]

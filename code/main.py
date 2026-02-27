@@ -80,7 +80,7 @@ def main():
     solutionPlne = None
     statutPlne = None
     t4 = t5 = None
-    if n <= 100:
+    if n <= 250:
         t4 = time.time()
         statutPlne, solutionPlne = resoudrePlneCompacte(matriceDist, p, alpha, station1)
         t5 = time.time()

@@ -103,7 +103,7 @@ def resoudrePlneCompacte(
 
 
     #solveur = pulp.PULP_CBC_CMD(msg=1)
-    solveur = pulp.CPLEX_CMD(msg=0)
+    solveur = pulp.GUROBI_CMD(msg=0)
 
     
     statut = modele.solve(solveur)

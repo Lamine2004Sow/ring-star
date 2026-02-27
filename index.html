@@ -154,6 +154,241 @@ Pour t = 1 à k :
 Retourner best
 </code></pre><p>Cette approche ne garantit pas l'optimalité globale mais améliore en pratique sensiblement la solution gloutonne. Les choix aléatoires permettent d'explorer divers voisinages et d'échapper à certains optima locaux.</p>
 <hr>
+<h2 id="résultats-expérimentaux">Résultats expérimentaux </h2>
+<p>Cette section consolide les sorties présentes dans <code>assets/resultat_*.txt</code> et les figures générées dans <code>assets/img/</code>.</p>
+<h3 id="synthèse-des-performances">Synthèse des performances </h3>
+<table>
+<thead>
+<tr>
+<th>Instance</th>
+<th><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span></span></span></span></th>
+<th>Glouton (coût / temps)</th>
+<th>Descente (coût / temps)</th>
+<th>PuLP (coût / temps)</th>
+<th>Gain descente vs glouton</th>
+<th>Écart descente vs PuLP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>att48.tsp</td>
+<td>10</td>
+<td>48833.893 / 0.001s</td>
+<td>45070.809 / 0.051s</td>
+<td>42269.868 / 72.001s</td>
+<td>7.71%</td>
+<td>6.63%</td>
+</tr>
+<tr>
+<td>att48.tsp</td>
+<td>24</td>
+<td>41676.904 / 0.001s</td>
+<td>33469.752 / 0.071s</td>
+<td>32776.174 / 21.120s</td>
+<td>19.69%</td>
+<td>2.12%</td>
+</tr>
+<tr>
+<td>att48.tsp</td>
+<td>38</td>
+<td>43840.260 / 0.001s</td>
+<td>32531.607 / 0.084s</td>
+<td>31481.397 / 2.119s</td>
+<td>25.80%</td>
+<td>3.34%</td>
+</tr>
+<tr>
+<td>kroA100.tsp</td>
+<td>20</td>
+<td>34764.858 / 0.001s</td>
+<td>29847.247 / 0.276s</td>
+<td>28742.035 / 445.467s</td>
+<td>14.15%</td>
+<td>3.85%</td>
+</tr>
+<tr>
+<td>kroA100.tsp</td>
+<td>50</td>
+<td>27507.798 / 0.001s</td>
+<td>21590.972 / 0.524s</td>
+<td>21373.603 / 79.019s</td>
+<td>21.51%</td>
+<td>1.02%</td>
+</tr>
+<tr>
+<td>kroA100.tsp</td>
+<td>80</td>
+<td>28482.665 / 0.007s</td>
+<td>21391.002 / 0.679s</td>
+<td>20157.461 / 19.631s</td>
+<td>24.90%</td>
+<td>6.12%</td>
+</tr>
+</tbody>
+</table>
+<p>Dans les six tests, la résolution PuLP (formulation compacte) retourne le statut <strong>Optimal</strong>.</p>
+<h3 id="détail-des-fichiers-de-sortie">Détail des fichiers de sortie </h3>
+<ul>
+<li><a href="assets/resultat_att48_10.txt">assets/resultat_att48_10.txt</a></li>
+<li><a href="assets/resultat_att48_24.txt">assets/resultat_att48_24.txt</a></li>
+<li><a href="assets/resultat_att48_38.txt">assets/resultat_att48_38.txt</a></li>
+<li><a href="assets/resultat_kroA100_20.txt">assets/resultat_kroA100_20.txt</a></li>
+<li><a href="assets/resultat_kroA100_50.txt">assets/resultat_kroA100_50.txt</a></li>
+<li><a href="assets/resultat_kroA100_80.txt">assets/resultat_kroA100_80.txt</a></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Commande</th>
+<th>Décomposition des coûts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resultat_att48_10.txt</code></td>
+<td><code>.venv/bin/python3 main.py att48.tsp 10</code></td>
+<td>Glouton: métro=20285.261, marche=28548.632 · Descente: métro=18225.988, marche=26844.821 · PuLP: métro=16220.000, marche=26049.868</td>
+</tr>
+<tr>
+<td><code>resultat_att48_24.txt</code></td>
+<td><code>.venv/bin/python3 main.py att48.tsp 24</code></td>
+<td>Glouton: métro=30704.869, marche=10972.035 · Descente: métro=21937.490, marche=11532.263 · PuLP: métro=21505.382, marche=11270.791</td>
+</tr>
+<tr>
+<td><code>resultat_att48_38.txt</code></td>
+<td><code>.venv/bin/python3 main.py att48.tsp 38</code></td>
+<td>Glouton: métro=40815.362, marche=3024.898 · Descente: métro=27589.030, marche=4942.578 · PuLP: métro=25544.659, marche=5936.739</td>
+</tr>
+<tr>
+<td><code>resultat_kroA100_20.txt</code></td>
+<td><code>.venv/bin/python3 main.py kroA100.tsp 20</code></td>
+<td>Glouton: métro=11932.630, marche=22832.227 · Descente: métro=11636.572, marche=18210.675 · PuLP: métro=11853.305, marche=16888.730</td>
+</tr>
+<tr>
+<td><code>resultat_kroA100_50.txt</code></td>
+<td><code>.venv/bin/python3 main.py kroA100.tsp 50</code></td>
+<td>Glouton: métro=19679.575, marche=7828.223 · Descente: métro=13419.794, marche=8171.178 · PuLP: métro=13650.733, marche=7722.870</td>
+</tr>
+<tr>
+<td><code>resultat_kroA100_80.txt</code></td>
+<td><code>.venv/bin/python3 main.py kroA100.tsp 80</code></td>
+<td>Glouton: métro=26943.891, marche=1538.774 · Descente: métro=17733.361, marche=3657.641 · PuLP: métro=16480.576, marche=3676.885</td>
+</tr>
+</tbody>
+</table>
+<h4 id="cycles-de-stations-détaillés">Cycles de stations détaillés </h4>
+<details><summary><code>resultat_att48_10.txt</code></summary>
+<p><strong>Commande :</strong> <code>.venv/bin/python3 main.py att48.tsp 10</code></p>
+<p><strong>Stations (ordre du cycle) :</strong></p>
+<ul>
+<li><strong>Gloutonne :</strong> <code>[0, 25, 23, 47, 31, 40, 13, 46, 45, 29]</code></li>
+<li><strong>Descente :</strong> <code>[0, 17, 12, 9, 38, 40, 4, 19, 45, 26]</code></li>
+<li><strong>PuLP :</strong> <code>[0, 4, 5, 9, 12, 17, 21, 32, 33, 38]</code></li>
+</ul>
+</details>
+<details><summary><code>resultat_att48_24.txt</code></summary>
+<p><strong>Commande :</strong> <code>.venv/bin/python3 main.py att48.tsp 24</code></p>
+<p><strong>Stations (ordre du cycle) :</strong></p>
+<ul>
+<li><strong>Gloutonne :</strong> <code>[0, 25, 9, 44, 1, 41, 23, 28, 33, 38, 20, 40, 2, 10, 46, 45, 35, 42, 47, 24, 37, 15, 39, 19]</code></li>
+<li><strong>Descente :</strong> <code>[0, 25, 9, 17, 1, 41, 8, 28, 33, 38, 34, 24, 2, 14, 46, 45, 21, 26, 47, 12, 5, 27, 39, 19]</code></li>
+<li><strong>PuLP :</strong> <code>[0, 1, 2, 5, 6, 8, 9, 10, 11, 12, 21, 24, 25, 26, 28, 30, 32, 33, 34, 37, 38, 41, 43, 47]</code></li>
+</ul>
+</details>
+<details><summary><code>resultat_att48_38.txt</code></summary>
+<p><strong>Commande :</strong> <code>.venv/bin/python3 main.py att48.tsp 38</code></p>
+<p><strong>Stations (ordre du cycle) :</strong></p>
+<ul>
+<li><strong>Gloutonne :</strong> <code>[0, 25, 9, 44, 41, 23, 1, 28, 47, 31, 38, 40, 33, 22, 12, 46, 15, 21, 39, 14, 19, 7, 8, 30, 43, 35, 42, 20, 2, 13, 37, 36, 45, 10, 34, 16, 32, 24]</code></li>
+<li><strong>Descente :</strong> <code>[0, 11, 9, 32, 41, 8, 1, 28, 47, 5, 38, 40, 33, 22, 27, 25, 15, 21, 20, 14, 18, 44, 17, 30, 43, 26, 42, 23, 45, 13, 37, 36, 6, 29, 34, 12, 10, 24]</code></li>
+<li><strong>PuLP :</strong> <code>[0, 1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 17, 18, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 41, 42, 43, 45, 46, 47]</code></li>
+</ul>
+</details>
+<details><summary><code>resultat_kroA100_20.txt</code></summary>
+<p><strong>Commande :</strong> <code>.venv/bin/python3 main.py kroA100.tsp 20</code></p>
+<p><strong>Stations (ordre du cycle) :</strong></p>
+<ul>
+<li><strong>Gloutonne :</strong> <code>[0, 64, 18, 78, 23, 35, 79, 46, 10, 66, 57, 59, 1, 72, 80, 11, 81, 36, 29, 13]</code></li>
+<li><strong>Descente :</strong> <code>[0, 64, 74, 15, 23, 2, 79, 90, 10, 66, 32, 59, 5, 72, 24, 11, 20, 54, 95, 99]</code></li>
+<li><strong>PuLP :</strong> <code>[0, 5, 10, 11, 12, 15, 20, 24, 27, 37, 41, 45, 49, 59, 63, 64, 90, 95, 96, 99]</code></li>
+</ul>
+</details>
+<details><summary><code>resultat_kroA100_50.txt</code></summary>
+<p><strong>Commande :</strong> <code>.venv/bin/python3 main.py kroA100.tsp 50</code></p>
+<p><strong>Stations (ordre du cycle) :</strong></p>
+<ul>
+<li><strong>Gloutonne :</strong> <code>[0, 64, 65, 69, 87, 78, 23, 37, 98, 96, 74, 48, 89, 9, 71, 58, 79, 41, 91, 62, 46, 10, 66, 27, 92, 97, 44, 57, 60, 76, 61, 1, 63, 68, 80, 50, 8, 11, 26, 81, 49, 84, 33, 42, 12, 36, 95, 29, 47, 13]</code></li>
+<li><strong>Descente :</strong> <code>[0, 96, 85, 69, 83, 78, 71, 37, 22, 94, 31, 20, 7, 77, 2, 4, 79, 55, 91, 90, 41, 10, 80, 45, 92, 64, 62, 57, 60, 59, 61, 99, 63, 68, 11, 43, 13, 17, 21, 81, 49, 70, 15, 82, 12, 5, 95, 6, 47, 52]</code></li>
+<li><strong>PuLP :</strong> <code>[0, 2, 3, 5, 6, 7, 10, 12, 13, 15, 17, 19, 22, 24, 27, 31, 36, 37, 41, 43, 45, 47, 52, 55, 57, 59, 60, 61, 62, 63, 64, 65, 67, 69, 70, 71, 72, 73, 78, 79, 81, 82, 83, 85, 90, 91, 94, 95, 96, 99]</code></li>
+</ul>
+</details>
+<details><summary><code>resultat_kroA100_80.txt</code></summary>
+<p><strong>Commande :</strong> <code>.venv/bin/python3 main.py kroA100.tsp 80</code></p>
+<p><strong>Stations (ordre du cycle) :</strong></p>
+<ul>
+<li><strong>Gloutonne :</strong> <code>[0, 25, 65, 15, 87, 17, 23, 98, 96, 74, 18, 89, 83, 35, 58, 79, 55, 7, 91, 62, 20, 10, 88, 46, 90, 44, 66, 57, 22, 59, 53, 63, 68, 60, 50, 56, 19, 61, 1, 43, 72, 67, 8, 54, 26, 81, 38, 28, 45, 42, 12, 36, 95, 77, 47, 13, 70, 92, 29, 52, 78, 3, 94, 69, 80, 31, 48, 76, 41, 34, 33, 49, 93, 84, 71, 86, 9, 2, 11, 99]</code></li>
+<li><strong>Descente :</strong> <code>[0, 92, 65, 37, 87, 17, 23, 98, 96, 24, 39, 89, 80, 79, 58, 5, 55, 7, 91, 30, 51, 10, 88, 46, 3, 15, 99, 57, 22, 59, 12, 63, 68, 32, 35, 48, 14, 1, 82, 43, 85, 67, 8, 6, 19, 27, 38, 77, 45, 72, 44, 36, 54, 73, 47, 4, 70, 26, 56, 52, 78, 21, 53, 69, 2, 31, 60, 13, 41, 90, 64, 49, 76, 84, 71, 11, 9, 20, 97, 33]</code></li>
+<li><strong>PuLP :</strong> <code>[0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 37, 38, 39, 41, 43, 45, 47, 48, 49, 52, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 64, 65, 67, 68, 69, 70, 71, 72, 73, 77, 78, 79, 80, 81, 82, 83, 85, 87, 88, 90, 91, 92, 94, 95, 96, 97, 99]</code></li>
+</ul>
+</details>
+<h3 id="visualisations-issues-du-dossier-assetsimg">Visualisations issues du dossier <code>assets/img</code> </h3>
+<p><strong>Instances :</strong></p>
+<p>
+<img src="assets/img/att48.tsp_instance.png" alt="Instance att48.tsp" loading="lazy" style="max-width:49%; vertical-align:top;">
+<img src="assets/img/kroA100.tsp_instance.png" alt="Instance kroA100.tsp" loading="lazy" style="max-width:49%; vertical-align:top;">
+</p>
+<p><strong>Comparaison visuelle des solutions (gloutonne, descente, PuLP) :</strong></p>
+<table>
+<thead>
+<tr>
+<th>Cas</th>
+<th>Gloutonne</th>
+<th>Descente</th>
+<th>PuLP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>att48.tsp, p=10</td>
+<td><img src="assets/img/att48.tsp_gloutonne_p10.png" alt="att48 gloutonne p10" loading="lazy"></td>
+<td><img src="assets/img/att48.tsp_descente_p10.png" alt="att48 descente p10" loading="lazy"></td>
+<td><img src="assets/img/att48.tsp_pulp_p10.png" alt="att48 pulp p10" loading="lazy"></td>
+</tr>
+<tr>
+<td>att48.tsp, p=24</td>
+<td><img src="assets/img/att48.tsp_gloutonne_p24.png" alt="att48 gloutonne p24" loading="lazy"></td>
+<td><img src="assets/img/att48.tsp_descente_p24.png" alt="att48 descente p24" loading="lazy"></td>
+<td><img src="assets/img/att48.tsp_pulp_p24.png" alt="att48 pulp p24" loading="lazy"></td>
+</tr>
+<tr>
+<td>att48.tsp, p=38</td>
+<td><img src="assets/img/att48.tsp_gloutonne_p38.png" alt="att48 gloutonne p38" loading="lazy"></td>
+<td><img src="assets/img/att48.tsp_descente_p38.png" alt="att48 descente p38" loading="lazy"></td>
+<td><img src="assets/img/att48.tsp_pulp_p38.png" alt="att48 pulp p38" loading="lazy"></td>
+</tr>
+<tr>
+<td>kroA100.tsp, p=20</td>
+<td><img src="assets/img/kroA100.tsp_gloutonne_p20.png" alt="kroA100 gloutonne p20" loading="lazy"></td>
+<td><img src="assets/img/kroA100.tsp_descente_p20.png" alt="kroA100 descente p20" loading="lazy"></td>
+<td><img src="assets/img/kroA100.tsp_pulp_p20.png" alt="kroA100 pulp p20" loading="lazy"></td>
+</tr>
+<tr>
+<td>kroA100.tsp, p=50</td>
+<td><img src="assets/img/kroA100.tsp_gloutonne_p50.png" alt="kroA100 gloutonne p50" loading="lazy"></td>
+<td><img src="assets/img/kroA100.tsp_descente_p50.png" alt="kroA100 descente p50" loading="lazy"></td>
+<td><img src="assets/img/kroA100.tsp_pulp_p50.png" alt="kroA100 pulp p50" loading="lazy"></td>
+</tr>
+<tr>
+<td>kroA100.tsp, p=80</td>
+<td><img src="assets/img/kroA100.tsp_gloutonne_p80.png" alt="kroA100 gloutonne p80" loading="lazy"></td>
+<td><img src="assets/img/kroA100.tsp_descente_p80.png" alt="kroA100 descente p80" loading="lazy"></td>
+<td><img src="assets/img/kroA100.tsp_pulp_p80.png" alt="kroA100 pulp p80" loading="lazy"></td>
+</tr>
+</tbody>
+</table>
+<p>L'ensemble des cycles de stations complets reste disponible dans les fichiers texte listés ci-dessus.</p>
+<hr>
 
       </div>
       

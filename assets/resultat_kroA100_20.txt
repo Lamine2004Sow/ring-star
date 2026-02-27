@@ -1,0 +1,11 @@
+.venv/bin/python3 main.py kroA100.tsp 20
+=== Heuristique ===
+Glouton: cout=34764.858 (metro=11932.630, marche=22832.227) temps=0.001s
+Solution gloutonne: [0, 64, 18, 78, 23, 35, 79, 46, 10, 66, 57, 59, 1, 72, 80, 11, 81, 36, 29, 13]
+=== Métaheuristique ===
+Descente: cout=29847.247 (metro=11636.572, marche=18210.675) temps=0.276s
+Solution descente: [0, 64, 74, 15, 23, 2, 79, 90, 10, 66, 32, 59, 5, 72, 24, 11, 20, 54, 95, 99]
+=== PuLP (formulation compacte) ===
+Statut: Optimal
+PuLP: cout=28742.035 (metro=11853.305, marche=16888.730) temps=445.467s
+Solution PuLP: [0, 5, 10, 11, 12, 15, 20, 24, 27, 37, 41, 45, 49, 59, 63, 64, 90, 95, 96, 99]
