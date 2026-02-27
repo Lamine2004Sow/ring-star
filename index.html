@@ -75,50 +75,213 @@ html body .vulgarise-highlight{background:#f0f9ff;border:1px solid #bae6fd;borde
 </div>
 </div>
 <section id="vulgarise-version" class="mode-panel">
-<h1>Le projet expliqué simplement</h1>
-<p><strong>Version non technique : sans formules, avec des exemples concrets.</strong></p>
+<h1>Le projet raconté comme une histoire (version non technique)</h1>
+<p><strong>Objectif :</strong> comprendre le projet sans maths compliquées, avec des images simples et un exemple de gâteaux.</p>
 <div class="vulgarise-card">
-<h2>Le problème en une phrase</h2>
-<p>On veut créer une ligne de métro en anneau qui passe par quelques stations bien choisies, puis relier les autres quartiers à la station la plus proche, pour que le coût total soit le plus faible possible.</p>
-</div>
-<div class="vulgarise-card">
-<h2>Image mentale (très simple)</h2>
-<p>Imagine une ville avec 100 quartiers.</p>
+<h2>L'histoire : la ville et les pâtisseries</h2>
+<p>Imagine une grande ville. Une équipe municipale veut lancer une ligne de métro circulaire. En parallèle, elle veut aussi aider un réseau de pâtisseries à livrer des gâteaux rapidement dans tous les quartiers.</p>
+<p>Le vrai problème est le même dans les deux cas :</p>
 <ul>
-<li>On ne peut pas construire une station dans chaque quartier (trop cher).</li>
-<li>On choisit donc seulement <code>p</code> stations.</li>
-<li>Ces stations sont reliées entre elles par une boucle (le métro circulaire).</li>
-<li>Chaque quartier sans station marche jusqu'à la station la plus proche.</li>
+<li>on ne peut pas mettre une station (ou une mini-boutique) partout, car c'est trop cher,</li>
+<li>il faut relier les points principaux par une boucle,</li>
+<li>puis rattacher les autres quartiers au point principal le plus proche.</li>
 </ul>
-<p>Le but est de trouver le meilleur compromis entre :</p>
+<p>On cherche donc un équilibre entre deux dépenses :</p>
 <ul>
-<li>un anneau pas trop long (coût métro),</li>
-<li>des trajets à pied pas trop grands (coût marche).</li>
+<li><strong>coût de la boucle</strong> (plus la boucle est grande, plus ça coûte),</li>
+<li><strong>coût d'accès</strong> (plus les habitants marchent loin, plus c'est pénalisant).</li>
 </ul>
 </div>
 <div class="vulgarise-card">
-<h2>Comment on résout ça dans le projet</h2>
+<h2>Image simple du problème</h2>
+<p>Dans ce dessin : les petits points gris sont les quartiers, les points bleus sont les stations choisies, la ligne orange est la boucle métro, et les traits gris représentent le rattachement des quartiers vers la station la plus proche.</p>
+<svg viewBox="0 0 760 330" role="img" aria-label="Schema simplifie du probleme ring star" style="max-width:760px; width:100%; height:auto;">
+  <rect x="0" y="0" width="760" height="330" fill="#ffffff"></rect>
+  <circle cx="70" cy="60" r="4" fill="#9ca3af"></circle>
+  <circle cx="120" cy="120" r="4" fill="#9ca3af"></circle>
+  <circle cx="160" cy="75" r="4" fill="#9ca3af"></circle>
+  <circle cx="200" cy="140" r="4" fill="#9ca3af"></circle>
+  <circle cx="260" cy="95" r="4" fill="#9ca3af"></circle>
+  <circle cx="310" cy="145" r="4" fill="#9ca3af"></circle>
+  <circle cx="360" cy="88" r="4" fill="#9ca3af"></circle>
+  <circle cx="420" cy="150" r="4" fill="#9ca3af"></circle>
+  <circle cx="500" cy="82" r="4" fill="#9ca3af"></circle>
+  <circle cx="560" cy="135" r="4" fill="#9ca3af"></circle>
+  <circle cx="620" cy="78" r="4" fill="#9ca3af"></circle>
+  <circle cx="680" cy="128" r="4" fill="#9ca3af"></circle>
+  <polyline points="140,240 280,205 430,225 560,250 500,300 320,300 180,275 140,240" fill="none" stroke="#f59e0b" stroke-width="4"></polyline>
+  <circle cx="140" cy="240" r="9" fill="#0ea5e9"></circle>
+  <circle cx="280" cy="205" r="9" fill="#0ea5e9"></circle>
+  <circle cx="430" cy="225" r="9" fill="#0ea5e9"></circle>
+  <circle cx="560" cy="250" r="9" fill="#0ea5e9"></circle>
+  <circle cx="500" cy="300" r="9" fill="#0ea5e9"></circle>
+  <circle cx="320" cy="300" r="9" fill="#0ea5e9"></circle>
+  <circle cx="180" cy="275" r="9" fill="#0ea5e9"></circle>
+  <line x1="120" y1="120" x2="140" y2="240" stroke="#d1d5db" stroke-width="2"></line>
+  <line x1="200" y1="140" x2="280" y2="205" stroke="#d1d5db" stroke-width="2"></line>
+  <line x1="360" y1="88" x2="430" y2="225" stroke="#d1d5db" stroke-width="2"></line>
+  <line x1="560" y1="135" x2="560" y2="250" stroke="#d1d5db" stroke-width="2"></line>
+  <line x1="680" y1="128" x2="560" y2="250" stroke="#d1d5db" stroke-width="2"></line>
+  <rect x="22" y="256" width="14" height="14" fill="#0ea5e9"></rect>
+  <text x="44" y="268" font-size="13" fill="#111827">Station choisie</text>
+  <rect x="22" y="278" width="14" height="14" fill="#9ca3af"></rect>
+  <text x="44" y="290" font-size="13" fill="#111827">Quartier</text>
+  <line x1="22" y1="302" x2="36" y2="302" stroke="#f59e0b" stroke-width="4"></line>
+  <text x="44" y="307" font-size="13" fill="#111827">Boucle principale</text>
+</svg>
+</div>
+<div class="vulgarise-card">
+<h2>Traduction en langage de tous les jours</h2>
+<table>
+<thead>
+<tr>
+<th>Terme technique</th>
+<th>Version simple</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Station</td>
+<td>Point de service principal (métro ou boutique de gâteaux)</td>
+</tr>
+<tr>
+<td>Anneau (ring)</td>
+<td>La tournée circulaire qui relie les points importants</td>
+</tr>
+<tr>
+<td>Étoile (star)</td>
+<td>Chaque quartier est relié à son point principal le plus proche</td>
+</tr>
+<tr>
+<td>Coût total</td>
+<td>Coût de la boucle + effort d'accès des quartiers</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="vulgarise-card">
+<h2>Exemple gâteaux : comprendre l'heuristique gloutonne</h2>
+<p>Imagine une pâtissière, Nora, qui doit livrer 12 quartiers. Elle n'a le budget que pour ouvrir <strong>4 mini-boutiques</strong> (équivalent de <code>p=4</code> stations).</p>
+<p>Sa méthode gloutonne ressemble à ceci :</p>
 <ol>
-<li><strong>Version rapide :</strong> une méthode gloutonne construit une solution immédiatement.</li>
-<li><strong>Version améliorée :</strong> une métaheuristique remplace petit à petit des stations pour améliorer le résultat.</li>
-<li><strong>Version référence :</strong> PuLP calcule la meilleure solution exacte (plus lente).</li>
+<li>Elle place vite des boutiques dans des zones différentes de la ville pour couvrir large.</li>
+<li>Elle complète les emplacements manquants avec des zones encore mal desservies.</li>
+<li>Elle relie ces boutiques dans une boucle simple pour la navette de gâteaux.</li>
 </ol>
+<p>C'est rapide et souvent bon, mais pas toujours parfait.</p>
+<svg viewBox="0 0 760 300" role="img" aria-label="Heuristique gloutonne avec exemple de gateaux" style="max-width:760px; width:100%; height:auto;">
+  <rect x="0" y="0" width="760" height="300" fill="#ffffff"></rect>
+  <text x="20" y="34" font-size="18" fill="#111827">Heuristique gloutonne = "on construit vite une première bonne tournée"</text>
+  <circle cx="90" cy="90" r="6" fill="#9ca3af"></circle>
+  <circle cx="140" cy="130" r="6" fill="#9ca3af"></circle>
+  <circle cx="195" cy="85" r="6" fill="#9ca3af"></circle>
+  <circle cx="260" cy="120" r="6" fill="#9ca3af"></circle>
+  <circle cx="320" cy="95" r="6" fill="#9ca3af"></circle>
+  <circle cx="390" cy="140" r="6" fill="#9ca3af"></circle>
+  <circle cx="470" cy="95" r="6" fill="#9ca3af"></circle>
+  <circle cx="530" cy="140" r="6" fill="#9ca3af"></circle>
+  <circle cx="605" cy="100" r="6" fill="#9ca3af"></circle>
+  <circle cx="675" cy="145" r="6" fill="#9ca3af"></circle>
+  <circle cx="340" cy="225" r="11" fill="#f97316"></circle>
+  <circle cx="500" cy="215" r="11" fill="#f97316"></circle>
+  <circle cx="220" cy="215" r="11" fill="#f97316"></circle>
+  <circle cx="90" cy="215" r="11" fill="#f97316"></circle>
+  <polyline points="90,215 220,215 340,225 500,215 90,215" fill="none" stroke="#0ea5e9" stroke-width="4"></polyline>
+  <text x="76" y="220" font-size="11" fill="#ffffff">C</text>
+  <text x="205" y="220" font-size="11" fill="#ffffff">C</text>
+  <text x="325" y="230" font-size="11" fill="#ffffff">C</text>
+  <text x="485" y="220" font-size="11" fill="#ffffff">C</text>
+  <text x="20" y="272" font-size="13" fill="#111827">Les points orange (C) = mini-boutiques de gâteaux choisies rapidement.</text>
+  <text x="20" y="290" font-size="13" fill="#111827">La ligne bleue = tournée de navette entre les boutiques.</text>
+</svg>
+<p><strong>Idée clé :</strong> la gloutonne donne une base solide en quelques millisecondes, donc très utile pour démarrer.</p>
 </div>
 <div class="vulgarise-card">
-<h2>Ce que montrent les résultats (important)</h2>
-<div class="vulgarise-highlight">
+<h2>Exemple gâteaux : comprendre la métaheuristique</h2>
+<p>Ensuite, Nora fait comme un chef qui goûte et ajuste une recette :</p>
 <ul>
-<li>La version améliorée est <strong>toujours meilleure</strong> que la version rapide.</li>
-<li>Gain moyen observé : <strong>+18.96%</strong> sur le coût total.</li>
-<li>Elle reste proche de la solution optimale : <strong>3.84%</strong> d'écart moyen.</li>
-<li>Elle est beaucoup plus rapide que la solution exacte : en moyenne <strong>~588x</strong> plus rapide.</li>
+<li>elle retire une boutique peu utile,</li>
+<li>elle teste une nouvelle boutique ailleurs,</li>
+<li>si le service global s'améliore, elle garde ce changement, sinon elle revient en arrière.</li>
+</ul>
+<p>Elle répète ce petit jeu plusieurs fois. C'est exactement l'idée de la <strong>métaheuristique</strong> : de petites modifications pour améliorer la solution.</p>
+<svg viewBox="0 0 760 320" role="img" aria-label="Métaheuristique par ameliorations successives" style="max-width:760px; width:100%; height:auto;">
+  <rect x="0" y="0" width="760" height="320" fill="#ffffff"></rect>
+  <text x="20" y="30" font-size="18" fill="#111827">Métaheuristique = "j'essaie un échange, je garde seulement si c'est meilleur"</text>
+  <rect x="30" y="60" width="300" height="210" fill="#f8fafc" stroke="#cbd5e1"></rect>
+  <text x="45" y="85" font-size="14" fill="#111827">Avant</text>
+  <circle cx="80" cy="130" r="10" fill="#f97316"></circle>
+  <circle cx="170" cy="120" r="10" fill="#f97316"></circle>
+  <circle cx="245" cy="145" r="10" fill="#f97316"></circle>
+  <circle cx="115" cy="205" r="10" fill="#f97316"></circle>
+  <polyline points="80,130 170,120 245,145 115,205 80,130" fill="none" stroke="#0ea5e9" stroke-width="3"></polyline>
+  <text x="45" y="245" font-size="13" fill="#111827">Coût total = 100</text>
+  <rect x="430" y="60" width="300" height="210" fill="#ecfeff" stroke="#67e8f9"></rect>
+  <text x="445" y="85" font-size="14" fill="#111827">Après échange d'une boutique</text>
+  <circle cx="475" cy="145" r="10" fill="#f97316"></circle>
+  <circle cx="560" cy="120" r="10" fill="#f97316"></circle>
+  <circle cx="655" cy="140" r="10" fill="#f97316"></circle>
+  <circle cx="560" cy="205" r="10" fill="#f97316"></circle>
+  <polyline points="475,145 560,120 655,140 560,205 475,145" fill="none" stroke="#0891b2" stroke-width="3"></polyline>
+  <text x="445" y="245" font-size="13" fill="#111827">Coût total = 89 (meilleur, on garde)</text>
+  <line x1="350" y1="160" x2="410" y2="160" stroke="#111827" stroke-width="3"></line>
+  <polygon points="410,160 398,152 398,168" fill="#111827"></polygon>
+  <text x="338" y="145" font-size="12" fill="#111827">Test</text>
+</svg>
+<p><strong>Idée clé :</strong> ce n'est pas magique, mais en répétant les essais intelligents, on gagne beaucoup par rapport à la première solution.</p>
+</div>
+<div class="vulgarise-card">
+<h2>Et la méthode exacte (PuLP), c'est quoi dans l'histoire ?</h2>
+<p>Imagine maintenant un super expert qui compare énormément de plans possibles pour trouver le meilleur plan garanti.</p>
+<ul>
+<li>Avantage : excellente qualité (souvent optimale).</li>
+<li>Inconvénient : peut devenir très lent quand la ville est grande.</li>
+</ul>
+<p>Dans notre projet, cette méthode sert surtout de <strong>référence</strong> pour mesurer la qualité des méthodes rapides.</p>
+</div>
+<div class="vulgarise-card">
+<h2>Ce que vos résultats disent, en français simple</h2>
+<div class="vulgarise-highlight">
+<p>Sur les expériences réalisées :</p>
+<ul>
+<li>la métaheuristique améliore toujours la solution gloutonne,</li>
+<li>le gain moyen est d'environ <strong>+18.96%</strong>,</li>
+<li>la qualité reste proche de l'optimum (écart moyen <strong>3.84%</strong>),</li>
+<li>et le calcul est bien plus rapide que la méthode exacte (en moyenne <strong>~588x</strong>).</li>
 </ul>
 </div>
+<p>Donc, pour un décideur non-tech : la stratégie "rapide puis améliorée" est souvent le meilleur choix pratique.</p>
+</div>
+<div class="vulgarise-card">
+<h2>En pratique : quelle version utiliser ?</h2>
+<table>
+<thead>
+<tr>
+<th>Besoin</th>
+<th>Méthode conseillée</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Réponse immédiate</td>
+<td>Heuristique gloutonne</td>
+</tr>
+<tr>
+<td>Très bon compromis qualité/temps</td>
+<td>Métaheuristique</td>
+</tr>
+<tr>
+<td>Référence optimale sur petits/moyens cas</td>
+<td>PuLP (exact)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="vulgarise-card">
 <h2>Conclusion grand public</h2>
-<p>Si la ville doit décider vite et bien, la méthode améliorée est la plus utile en pratique : elle donne une solution de très bonne qualité, proche du meilleur possible, sans attendre longtemps.</p>
-<p>La version technique détaillée reste disponible via le bouton ci-dessus.</p>
+<p>Si on reprend l'image des gâteaux : la gloutonne est la première recette "qui marche vite", la métaheuristique est la phase où le chef ajuste la recette jusqu'à la rendre vraiment bonne, et PuLP est le laboratoire qui cherche la recette parfaite mais prend plus de temps.</p>
+<p>Pour la vraie vie (ville, transport, décisions rapides), la version améliorée par métaheuristique est la plus équilibrée.</p>
+<p>Si tu veux tous les détails formels, la version technique est disponible avec le bouton ci-dessus.</p>
 </div>
 </section>
 <div id="tech-version" class="mode-panel">
